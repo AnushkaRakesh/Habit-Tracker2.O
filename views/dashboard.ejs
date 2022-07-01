@@ -1,0 +1,137 @@
+
+<div class="row ml-5 fixed-top">
+    <div class="col-md-8">
+        <h1 class="mt-4 header">Habit Tracker</h1>
+    </div>
+    <div class="col-md-2 mt-4">
+        <p class="lead float-right mb-3" > <%= user.name %></p>
+    </div>
+    <div class="col-md-2 mt-4">
+        <a href="/users/logout" class="btn btn-info">Logout</a>
+    </div>
+</div>
+
+<!-- Habit Container -->
+<div class="habit-container text-center">
+    <h2 class="mt-3 mb-4 header">There is no influence like the influence of habit</h2>
+    <form action="/user-view" method="POST" class="habit-header">
+        <div class="btn-group mb-4" aria-label="Change View">
+            <% if(user.view === "daily"){ %>
+            <button type="submit" class="btn btn-info active" aria-pressed="true">Daily</button>
+            <button type="submit" class="btn btn-info">Weekly</button>
+            <% } else { %>
+            <button type="submit" class="btn btn-info">Daily</button>
+            <button type="submit" class="btn btn-info active" aria-pressed="true">Weekly</button>
+            <% } %>
+        </div>
+    </form>
+   
+    <div class="habit">
+        <form action="/dashboard" method="POST" class="habit-header mb-4">
+            <input type="text" name="content" required>
+            <button type="submit" class="btn btn-info"><span class="fa fa-plus"></span></button>
+        </form>
+        <i class="fa fa-check-circle" style="color: rgb(121, 245, 4);"></i>
+        Done&emsp;&emsp;
+        <i class="fa fa-times-circle" style="color: #E53C37;"></i>
+        Not Done&emsp;&emsp;
+        <i class="fa fa-minus-circle" style="color: gold;"></i>
+        Unmarked&emsp;&emsp;
+
+        <% if(user.view === "daily"){ %>
+        <ul class="habit-list">
+            <% habits.forEach(details => { let tzoffset = (new Date()).getTimezoneOffset() * 60000, found=false, status='';
+                var today = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+                details.dates.find(function (item, index) {
+                    if(item.date === today)
+                    {
+                        found = true;
+                        status = item.complete;
+                    }
+            }) %>
+            <li class="habit-list-item">
+
+                <div class="icon-content">
+                    <a href="status-update/?id=<%= details._id %>&date=<%= today %>" class="status" st>
+                        <% if(found && status==='yes'){ %>
+                        <i class="fa fa-check-circle" style="color: rgb(143, 233, 58);"></i>
+                        <% } else if(found && status==='no'){ %>
+                        <i class="fa fa-times-circle"  style=" color: #E53C37;"></i>
+                        <% } else { %>
+                        <i class="fa fa-minus-circle" style=" color: gold;"></i>
+                        <% } %>
+                    </a>
+                    <%= details.content %>
+                </div>
+
+                <div class="icon-content">
+                    <a href="/favorite-habit/?id=<%= details._id %>" class="favorite mr-3" style="text-decoration:none">
+                        <% if(details.favorite) { %>
+                        <i class="fa fa-star" style="color: rgb(109, 238, 17);";></i>
+                        <% } else { %>
+                        <i class="fa fa-star" style="color: white"></i>
+                        <% } %>
+                    </a>
+                    <a href="/remove/?id=<%= details._id %>" class="remove" style="text-decoration:none" >
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </div>
+                
+            </li>
+            <% }) %>
+        </ul>
+
+        <% } else { %>
+        <ul class="habit-list text-center">
+            <% habits.forEach(details => { %>
+            <li class="habit-list-item ">
+
+                <div class="icon-content-2">
+
+                    <div class="content-2">
+                        <%= details.content %>  
+                    </div>
+
+                    <div class="icon">
+                        <a href="/favorite-habit/?id=<%= details._id %>" class="favorite">
+                            <% if(details.favorite) { %>
+                            <i class="fa fa-star" style="color: rgb(109, 238, 17);"></i>
+                            <% } else { %>
+                            <i class="fa fa-star" style="color: white;"></i>
+                            <% } %>
+                        </a>
+                        <a href="/remove/?id=<%= details._id %>" class="remove">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </div>
+                    
+                </div>
+        
+                <% days.forEach(day => { let found = false, status = '';
+                details.dates.find(function (item, index) {
+                    if(item.date === day.date)
+                    {
+                        found = true;
+                        status = item.complete;
+                    }
+                });
+                %>
+                <div class="dotw">
+                    <div class="day mt-0"><span><%= day.day + ", " + day.date.slice(-2) %></span></div>
+                    <a href="status-update/?id=<%= details._id %>&date=<%= day.date %>" class="status2 mt-4">
+                        <% if(found && status==='yes'){ %>
+                        <i class="fa fa-check-circle" style="color: rgb(143, 233, 58);"></i>
+                        <% } else if(found && status==='no'){ %>
+                        <i class="fa fa-times-circle" style="color: red"></i>
+                        <% } else { %>
+                        <i class="fa fa-minus-circle" style="color: gold"></i>
+                        <% } %>
+                    </a>
+                </div>
+                <% }) %>
+            </li>
+            <% }) %>
+        </ul>
+        <% } %>
+    </div>
+</div>
